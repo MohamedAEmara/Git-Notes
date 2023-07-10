@@ -1,0 +1,279 @@
+to configure your name & email:
+	git config --global user.name "YOUR NAME"
+	
+	git config --globalc user.email "YOUR_EMAIL"
+
+These configuration are needed to register in the repo who made the changes to the repo
+
+	--global in the command means that in every commit on this device, The used name and mail will be these.
+
+Another command is used if you want to globalize the username for all users
+	--system
+These terms are not for verification, just for keeping track of who did what.
+
+To see all configurations: 
+	git config --list
+
+	echo << file.txt
+This creates a file.txt if not exist
+otherwise, append this string to next line in that file
+
+ To initialize a git repo in my directory
+ 1- First, select the location to add .git file
+ 2- use "git init" command
+
+
+ls 			--->  		list all files in the directory	(without hidden)
+ls -a 		---> 		list all files in the directory (also hidden files)
+ls -al 		---> 		list all files (with details) (with hidden)
+
+
+git status  ---> 		shows the status of files, "Untracked(U)", "Tracked", "Modified(M)"
+"no commits yet" 	-->    no snapshots taken yet
+
+
+ls 				---> 	to see files in the working directory
+git ls-files 	--->  	to see files in "index stage" 
+
+git add			---> 	transfer file from "untracked" to "tracked stage"  --> (staging)
+git add * 		---> 	staging all files 
+git add []		---> 	use file name to stage it ... YOU CAN ALSO USE "Regular Expressions" like: *.py
+ 
+git rm --cached <file>	--->  to unstage file
+
+git ls-files -s 		---> 	shows file name, sha1 (hashing code) of the file  
+
+cd .git/objects/		---> 	here are files but renamed with their sha code
+								in folders starts with first two chars of sha code
+
+git cat-file 	-t 		---> 	to see the type of the file
+				-s 		---> 	to see the size of the file
+				-p 		--->  	to see the content of the file
+
+after -t or -s or -p  we add the <sha code> of the file  (starts with the name of the folder followed by the name from ls command )
+
+
+git commit -m  "commit message"
+
+When we type [git commit -m ]	----->  three files creates in the path .git/objects/
+these files are blob, tree, commit 
+commit is like a wrapper to identify which of these files are related to this commit 
+and from this commit you'll be able to traverse throght all other commits.
+
+The file of the commit will be the same as the one that appears when we use git log command
+
+
+git status -s 			---> 	list files with their status (for example M modified)
+
+M (Modified) with red color 	---> 	means this modifications is neither in same as "index" nor "git repo" 
+M (Modified) with green color	---> 	added to "index" but not to "repo" ... this happens after "git add <file>"
+
+
+In any commit other than the first commit a new object is added (parent), a pointer to the previous commit.
+this allows us to be able to track previous verions till the first commit (root commit) in linked-list manner.
+
+
+Branch name is by default called "master"
+
+
+"head" 		---> 	points at the commit that is currenty is same as "working tree".
+
+
+git diff		---> 	list differences between "working tree" and "index" 
+So, if I use "git add"  then use "git diff" --> nothing will be shown as they are the same.
+
+added lines   	---> 	will be in green preceeded by green +
+removed lines 	---> 	will be in red preceeded by red -
+
+
+NOW, to get the differences between "repo" and "index (staged)"		--->  git diff --staged
+
+
+Another way to write commit msg, especially when the commit msg is long
+git config --global core.editor "editor"  then, when you hit "git commit" 	--->    this opens "editor" to write your commit msg
+when you close the popup window the commit msg will be added.
+
+
+Now, I can see commit msg and author with date, but can't see the content of that commit (differences)
+git show <commit id>	--->  	shows the files with ++ and --
+
+git log --oneline 		---> 	shows all commits with more organized show
+
+
+To get the difference between any two commits --->  git diff <firstCommit>..<secondCommit>
+Note that if we swap the firstCommit and secondCommit --> all insersions will be deletions and vice versa.
+
+
+Sofar, we know that if we want to convert untracked files to tracked, we use "git add"
+What if we want to rollback "git add"  --->  move the file from staged to working tree again (unstaging)
+	"git rm --cached <file>"
+
+
+if it was Modified  			===> 	use "git store" to get it back
+if it was modified and staged  	===>  	use "git restore --staged" then "git restore"
+
+
+to "add" & "commit" in the same line 
+		git commit -am "Commit Message"
+
+	
+git commit --amend			===> 	to change the last commit msg
+
+
+================================ Moving between different commits ==========================
+
+As mentioned above, HEAD is a pointer to the commit that is in the "working tree"
+If we want to make our "working tree" as a previous commit, We have to move the head to that commit
+
+But, sometimes it's better not to directly change the working tree, but to make change the "staging" first 
+to see differences before applying it to our "working tree" to avoid any possible errors 
+
+// to change the staging only (not the working tree)
+
+git reset HEAD~1			===> 		move the head to ONE previous commit (indexing)
+git reset HEAD~2			===> 		move the head to TWO previous commits
+
+We can also use "git diff 4b91c6..HEAD  -->  to see the diffs between Head and "4b91c6" 
+
+
+// to change the "working tree"  use --hard before HEAD
+
+git reset --hard HEAD~1 	===> 		move the head to ONE previous commit (working tree)
+
+
+git reflog 			---> 		shows all operations and all changes of HEAD
+
+
+// to make a "fast forward" (move forward to a commit) use @{<commit-no>}
+git reset --hard HEAD@{3}		===> 	for example, move the head to three commits forward
+
+
+
+
+========================================== TAGS or distinguished commits =======================
+
+git tag -a v2.0 -m "Version 2.0 of file"	---> 	the HEAD commit will be taged (v2.0)
+when using "git log" 	the commit that was taged will be something like this:
+	c7faf85 (HEAD -> master, tag: v2.0) commit msg changed
+
+one of the uses of tags is that we can use in in "git show"
+git show v2.0		---> 	will display the commit assocciated to that tage and its differences 
+
+
+
+
+========================================== Branches ========================================
+
+
+To create a new branch, simply use 		"git branch <branch_name>"
+to view all branches, 					"git branch"
+
+git log --oneline 		 
+	ca9a97c (HEAD -> master, testing) Third line added to file
+	fac528e Second line added
+	2cf61b5 Initial commit
+the previous three lines means that 
+	1- HEAD is refering to master branch
+	2- HEAD and testing brances are both on the commit "third line added to file"
+
+
+To switch "HEAD" to another branch,
+	git switch testing		--->  		now, HEAD is refering to "testing" branch.
+
+	ca9a97c (HEAD -> testing, master) Third line added to file
+	fac528e Second line added
+	2cf61b5 Initial commit
+
+now, if I do any commit, "master" and "testing" won't be on the same commit any more 
+any commit from now on, will change the head with testing branch. but "master" will remain the same..
+
+
+
+
+======================================== Merging ===========================================
+
+You first will be on the branch you want to apply merge on.
+Then, use git merge <branch> to take updates from. 
+	git switch master 
+	git merge teting 	
+
+after merging from testing branch, all new changed have already applied to "master" branch 
+So, we can delete it now.
+
+git brach -d testing 		---> 		delete  "testing" brach.
+
+
+git log --all --graph --decorate --oneline			===> 	to include all details in "git log" command
+
+
+
+The straightforward way to merge 2 branches will be different if both of the branches have different commits 
+in this way, we have to make a new branch to merge the two different branches.
+
+So, when we use "git merge testing"  	===> 	that will create a new commit to combine the two paths
+
+
+
+*   af35328 (HEAD -> test) Merge branch 'master' into test
+|\  
+| * 27ba6d4 (master) New file in master branch
+* | fbc45d4 fifth line added to test branch
+| | * 7d0fdf9 (b3) new file added to b3
+| |/  
+| * e23ce6f Add new file to master branch
+|/  
+* 6dcc12c First commit in testing branch
+* ca9a97c Third line added to file
+* fac528e Second line added
+* 2cf61b5 Initial commit
+
+this is an example of three way merge
+
+
+
+
+// =================================== Cloning Remote Repo ====================================== //
+
+git clone <location> <name>			----> 		Note that <name> is optional, default is the same name of remote
+
+Example: 	
+	git clone ./Remote-repo local-repo 		--- 	a copy of remote-repo will be cloned in "local-repo" directory
+
+
+
+git remote 			--->		"origing"	if the repo was cloned from other repo
+					--->		nothing if the repo was initialized in the "working tree"
+
+
+git remote -v 		---> 		displays the path of the origin "remote"
+
+
+the origin (remote-repo) has updates after cloning, I won't be able to see them even  using 
+"git status"		---> 		will say "you are on branch master"
+
+to get the updates happened to "remote" 	----> 		git fetch
+
+Now, a new message appears:		"Your branch is behind 'origin/master' by 1 commit"
+
+Note: These changes haven't applied to "local" yet. But you can see these commits in "git log"  
+
+
+git pull origin 			---> 		to apply these changes to your local repo
+
+
+
+
+
+To declare a macro for command (alias)
+	 alias graph="git log --oneline --all --decorate --graph" 		--->     "graph" instead of the long command
+
+
+
+To create a remote origin to your local repo:
+	git remote add origin <GitHub repository URL>. Replace <GitHub repository URL> with the URL of the repository you created 
+To push changes to "remote"
+	Push your local repository to the GitHub repository by running the command git push -u origin master. 
+	Replace "master" with the name of the branch you want to push.
+
+
+
